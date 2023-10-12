@@ -1,24 +1,43 @@
 #!/usr/bin/python3
 """
-My Base module
+My Base model
 """
 import uuid
 import json
 from datetime import datetime
 
 
-class BaseModule:
+class BaseModel:
     """
     My base class
     """
-    def __init__(self):
-        """ constructor method that initialize the attributes"""
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
+    def __init__(self, *args, **kwargs):
+        """ constructor method that initialize the attributes
+        """
         self.updated_at = datetime.now()
 
+        if kwargs:
+            # check whether kwargs is empty or not, if it is not empty:-
+            for key, value in kwargs.items():
+                if key == "__class__":
+                    continue   # skip the __class__ key.
+                setattr(self, key, value)    # set the attrribute.
+
+                if key in ["create_at", "updated_at"]:
+                    # if key is one of the two
+                    #  convert datetime to object format.
+                    setattr(
+                        self,
+                        key, datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+                        )
+        else:
+            # if kwargs is empty, create the id and created_at as before.
+            self.id = str(uuid.uuid4())
+            self.created_at = datetime.now()
+
     def __str__(self):
-        """Return a string representation of the BaseModel instance"""
+        """Return a string representation of the BaseModel instance
+        """
         return f"[{self.__class__.__name__}] ({self.id}) {self.__dict__}"
 
     def save(self):
