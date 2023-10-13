@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 """
-My Base model
+My Base model.
 """
 import uuid
-import json
+import models
 from datetime import datetime
 
 # from models package import storage variable
@@ -17,10 +17,6 @@ class BaseModel:
     def __init__(self, *args, **kwargs):
         """ constructor method that initialize the attributes
         """
-        self.updated_at = datetime.now()
-
-        if not kwargs:
-            storage.new(self)
 
         if kwargs:
             # check whether kwargs is empty or not, if it is not empty:-
@@ -40,6 +36,8 @@ class BaseModel:
             # if kwargs is empty, create the id and created_at as before.
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
+            self.updated_at = datetime.now()
+            storage.new(self)
 
     def __str__(self):
         """Return a string representation of the BaseModel instance
@@ -59,24 +57,3 @@ class BaseModel:
         obj_dict['created_at'] = self.created_at.isoformat()
         obj_dict['updated_at'] = self.updated_at.isoformat()
         return obj_dict
-
-    def from_dict(self, dictionary):
-        """
-        Initialize the objects attributes from a dictionary.
-        """
-        self.__dict__.update(dictionary)
-
-    def save_to_file(self, filename):
-        """Save the objects data to a file in JSON format."""
-        with open(filename, 'w') as fil:
-            json.dump(self.to_dict(), fil)
-
-    @classmethod
-    def load_from_file(cls, filename):
-        """Load the object's data from a file and create an instance.
-        """
-        with open(filename, 'r') as fil:
-            data = json.load(fil)
-        instc = cls()
-        instc.from_dict(data)
-        return instc

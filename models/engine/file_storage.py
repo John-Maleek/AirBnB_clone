@@ -40,7 +40,7 @@ class FileStorage:
         """
         serialized_obj = {}
         for key, obj in self.__objects.items():
-            serialized_obj[key] = obj.to_dict
+            serialized_obj[key] = obj.to_dict()
 
         with open(self.__file_path, 'w') as fil:
             json.dump(serialized_obj, fil)
@@ -51,10 +51,12 @@ class FileStorage:
         """
         try:
             with open(self.__file_path, 'r') as fil:
-                data = json.load(fil)
-                for key, obj_dict in data.items():
-                    class_name, obj_id = key.split('.')
-                    obj = BaseModel.create(**obj_dict)
-                    self.__objects[key] = obj
-        except FileNotFoundError:
+                json_data = fil.read()
+                if json_data:
+                    data = json.load(fil)
+                    for key, obj_dict in data.items():
+                        class_name, obj_id = key.split('.')
+                        obj = BaseModel.create(**obj_dict)
+                        self.__objects[key] = obj
+        except (FileNotFoundError, json.JSONDecodeError):
             pass
