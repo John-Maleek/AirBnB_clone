@@ -6,6 +6,9 @@ import uuid
 import json
 from datetime import datetime
 
+# from models package import storage variable
+from models import storage
+
 
 class BaseModel:
     """
@@ -15,6 +18,9 @@ class BaseModel:
         """ constructor method that initialize the attributes
         """
         self.updated_at = datetime.now()
+
+        if not kwargs:
+            storage.new(self)
 
         if kwargs:
             # check whether kwargs is empty or not, if it is not empty:-
@@ -44,6 +50,7 @@ class BaseModel:
         """update the updated_at attribute with the current datetime
         """
         self.updated_at = datetime.now()
+        storage.save()
 
     def to_dict(self):
         """Convert the object's attributes to a dictionary."""
