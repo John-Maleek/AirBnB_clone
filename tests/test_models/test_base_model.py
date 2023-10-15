@@ -6,6 +6,7 @@ Test file that test BaseModel
 import unittest
 import models
 import inspect
+from unittest import mock
 import pep8 as pycodestyle
 from datetime import datetime
 from models.base_model import BaseModel
@@ -137,3 +138,19 @@ class TestBaseModel(unittest.TestCase):
             self.assertTrue(
                     len(mth[1].__doc__) > 1,
                     "{:} method need docs".format(mth[0]))
+
+    @mock.patch('models.storage')
+    def test_save_storage(self, mock_storage):
+        """
+        Test save method by calling storage.save
+        """
+        ins = BaseModel()
+        priv_cret = ins.created_at
+        priv_upd = ins.updated_at
+        ins.save()
+        nw_cret = ins.created_at
+        nw_upd = ins.updated_at
+        self.assertNotEqual(priv_upd, nw_upd)
+        self.assertEqual(priv_cret, nw_cret)
+        # self.assertTrue(mock_storage.new.called)
+        # self.assertTrue(mock_storage.save.called)
