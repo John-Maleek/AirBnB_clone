@@ -12,6 +12,7 @@ from models.place import Place
 from models.review import Review
 from models.engine.file_storage import FileStorage
 from datetime import datetime
+import re
 
 
 classes = {'BaseModel': BaseModel, 'User': User, 'State': State,
@@ -148,6 +149,44 @@ class HBNBCommand(cmd.Cmd):
                         return
                 print("** no instance found **")
 
+    def get_objects(self, instance=''):
+        """Gets all objects based instance
+        """
+        objects = storage.all()
+
+        if instance:
+            # keys = objects.keys()
+            return [str(val) for key, val in objects.items()
+                    if key.startswith(instance)]
+
+        return [str(val) for key, val in objects.items()]
+
+    def default(self, line):
+        """
+            When the command prefix is not recognized, this method
+            looks for whether the command entered has the syntax:
+                "<class name>.<method name>" or not,
+            and links it to the corresponding method in case the
+            class exists and the method belongs to the class.
+
+        """
+        if '.' in line:
+            splitted = re.split(r'\.|\(|\)', line)
+            class_name = splitted[0]
+            command = splitted[1]
+
+            if class_name in classes:
+                if command == 'all':
+                    print(self.get_objects(class_name))
+                elif command == 'count':
+                    print(len(self.get_objects(class_name)))
+                elif command == 'show':
+                    class_id = splitted[2][1:-1]
+                    self.do_show(class_name + ' ' + class_id)
+                elif command == 'destroy':
+                    class_id = splitted[2][1:-1]
+                    self.do_destroy(class_name + ' ' + class_id)
+        
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
