@@ -5,12 +5,17 @@
 import cmd
 from models.base_model import BaseModel
 from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
 from models.engine.file_storage import FileStorage
-import ast
 from datetime import datetime
 
 
-classes = {'BaseModel': BaseModel, 'User': User}
+classes = {'BaseModel': BaseModel, 'User': User, 'State': State,
+           'City': City, 'Amenity': Amenity, 'Place': Place, 'Review': Review, }
 storage = FileStorage()
 storage.reload()
 
@@ -45,10 +50,8 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
         else:
             new_instance = classes[args]()
-            print(new_instance.to_dict())
-            print(new_instance.id)
             new_instance.save()
-            print("Created model width id: {}".format(new_instance.id))
+            print(new_instance.id)
 
     def do_show(self, args):
         """
@@ -112,9 +115,14 @@ class HBNBCommand(cmd.Cmd):
             else:
                 for key, val in storage.all().items():
                     if key.split('.')[1] == args[1]:
-                        val[args[2]] = args[3]
-                        val['updated_at'] = datetime.now().strftime(
-                            "%Y-%m-%dT%H:%M:%S.%f")
+                        try:
+                            val[args[2]] = args[3]
+                            val['updated_at'] = datetime.now().strftime(
+                                "%Y-%m-%dT%H:%M:%S.%f")
+                        except TypeError:
+                            setattr(storage.all()[key], args[2], args[3])
+                            setattr(storage.all()[key], 'updated_at', datetime.now().strftime(
+                                "%Y-%m-%dT%H:%M:%S.%f"))
                         storage.save()
                         return
                 print("** no instance found **")
