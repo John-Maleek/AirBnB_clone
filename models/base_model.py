@@ -3,17 +3,22 @@
 My Base model.
 """
 import uuid
-import models
+# import models
 from datetime import datetime
 
 # from models package import storage variable
-from models import storage
+# from engine.file_storage import FileStorage
+from models.engine import file_storage
+
+storage = file_storage.FileStorage()
+# storage.reload()
 
 
 class BaseModel:
     """
     My base class
     """
+
     def __init__(self, *args, **kwargs):
         """ constructor method that initialize the attributes
         """
@@ -31,13 +36,14 @@ class BaseModel:
                     setattr(
                         self,
                         key, datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
-                        )
+                    )
         else:
             # if kwargs is empty, create the id and created_at as before.
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
             storage.new(self)
+            print("Created new instance")
 
     def __str__(self):
         """Return a string representation of the BaseModel instance
@@ -49,6 +55,7 @@ class BaseModel:
         """
         self.updated_at = datetime.now()
         storage.save()
+        print('Saved newly updated instance')
 
     def to_dict(self):
         """Convert the object's attributes to a dictionary."""

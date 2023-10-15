@@ -5,6 +5,7 @@ deserialize JSON file to instanceis.
 """
 
 import json
+# from models import base_model
 
 
 class FileStorage:
@@ -40,9 +41,12 @@ class FileStorage:
         """
         serialized_obj = {}
         for key, obj in self.__objects.items():
-            serialized_obj[key] = obj.to_dict()
+            try:
+                serialized_obj[key] = obj.to_dict()
+            except AttributeError:
+                serialized_obj[key] = obj
 
-        with open(self.__file_path, 'w') as fil:
+        with open(self.__file_path, 'w', encoding='utf-8') as fil:
             json.dump(serialized_obj, fil)
 
     def reload(self):
@@ -51,12 +55,21 @@ class FileStorage:
         """
         try:
             with open(self.__file_path, 'r') as fil:
-                json_data = fil.read()
+                # json_data = fil.read()
+                json_data = json.load(fil)
+                # print(json_data)
                 if json_data:
-                    data = json.load(fil)
+                    # data = json.load(fil)
+                    data = json_data
+                    # print(data)
                     for key, obj_dict in data.items():
-                        class_name, obj_id = key.split('.')
-                        obj = BaseModel.create(**obj_dict)
-                        self.__objects[key] = obj
+                        # print("{}: {}".format(key, obj_dict))
+                        # print(key)
+                        # class_name, obj_id = key.split('.')
+                        # print('{}.{}'.format(class_name, obj_id))
+                        # obj = BaseModel.create(**obj_dict)
+                        self.__objects[key] = obj_dict
+                # print(len(self.__objects))
+
         except (FileNotFoundError, json.JSONDecodeError):
             pass
