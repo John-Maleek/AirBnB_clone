@@ -5,15 +5,22 @@ deserialize JSON file to instanceis.
 """
 
 import json
-# from models import base_model
+import models
+from models.base_model import BaseModel
+from models.user import User
 
 
 class FileStorage:
     """
     My file storage class
     """
-    __file_path = "file.json"
-    __objects = {}
+
+    def __init__(self):
+        """
+        constructor method that initializes attributes of the instance.
+        """
+        self.__file_path = "file.json"
+        self.__objects = {}
 
     def all(self):
         """
@@ -32,16 +39,13 @@ class FileStorage:
     def save(self):
         """
         serializes the __objects dictionary to JSON file specified
-        in __file_path
+        in __file_path.
         """
         serialized_obj = {}
         for key, obj in self.__objects.items():
-            try:
-                serialized_obj[key] = obj.to_dict()
-            except AttributeError:
-                serialized_obj[key] = obj
-    
-        with open(self.__file_path, 'w', encoding='utf-8') as fil:
+            serialized_obj[key] = obj.to_dict()
+
+        with open(self.__file_path, 'w') as fil:
             json.dump(serialized_obj, fil)
 
     def reload(self):
@@ -49,12 +53,16 @@ class FileStorage:
         Deserializes the JSON file back into the __objects dictionary.
         """
         try:
-          with open(self.__file_path, 'r', encoding='utf-8') as fil:
-                json_data = json.load(fil)
+            with open(self.__file_path, 'r') as fil:
+                json_data = fil.read()
                 if json_data:
-                    data = json_data
+                    data = json.load(fil)
                     for key, obj_dict in data.items():
-                        self.__objects[key] = obj_dict
-                    print(type(self.__objects))
+                        class_name, obj_id = key.split('.')
+
+                        if class_name == 'User':
+                            self.__objects[key] = User(**obj_dict)
+                        else:
+                            self.__objects[key] = BaseModel(**obj_dict)
         except (FileNotFoundError, json.JSONDecodeError):
             pass

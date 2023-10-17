@@ -3,6 +3,8 @@
 My Base model.
 """
 import uuid
+# import models
+from datetime import datetime
 
 # from models package import storage variable
 # from engine.file_storage import FileStorage
@@ -10,8 +12,6 @@ from models.engine import file_storage
 
 storage = file_storage.FileStorage()
 # storage.reload()
-from datetime import datetime
-from models import storage
 
 
 class BaseModel:
@@ -30,7 +30,7 @@ class BaseModel:
                     continue   # skip the __class__ key.
                 setattr(self, key, value)    # set the attrribute.
 
-                if key in ["created_at", "updated_at"]:
+                if key in ["create_at", "updated_at"]:
                     # if key is one of the two
                     #  convert datetime to object format.
                     setattr(
@@ -41,7 +41,7 @@ class BaseModel:
             # if kwargs is empty, create the id and created_at as before.
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
-            self.updated_at = self.created_at
+            self.updated_at = datetime.now()
             storage.new(self)
             print("Created new instance")
 
@@ -55,6 +55,7 @@ class BaseModel:
         """
         self.updated_at = datetime.now()
         storage.save()
+        storage.new(self)
         print('Saved newly updated instance')
 
     def to_dict(self):
