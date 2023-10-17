@@ -50,7 +50,6 @@ class FileStorage:
         """
         try:
             with open(self.__file_path, 'r') as fil:
-<<<<<<< HEAD
                 # json_data = fil.read()
                 json_data = json.load(fil)
                 # print(json_data)
@@ -67,12 +66,10 @@ class FileStorage:
                         self.__objects[key] = obj_dict
                 # print(len(self.__objects))
 
-=======
                 json_data = json.load(fil)
                 if json_data:
                     data = json_data
                     for key, obj_dict in data.items():
                         self.__objects[key] = obj_dict
->>>>>>> b2bb70ee80ab49d9eafeef632ed8f48ed0ac48e9
         except (FileNotFoundError, json.JSONDecodeError):
             pass
