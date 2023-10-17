@@ -3,22 +3,14 @@
 My Base model.
 """
 import uuid
-
-# from models package import storage variable
-# from engine.file_storage import FileStorage
-from models.engine import file_storage
-
-storage = file_storage.FileStorage()
-# storage.reload()
+import models
 from datetime import datetime
-from models import storage
 
 
 class BaseModel:
     """
     My base class
     """
-
     def __init__(self, *args, **kwargs):
         """ constructor method that initialize the attributes
         """
@@ -30,32 +22,29 @@ class BaseModel:
                     continue   # skip the __class__ key.
                 setattr(self, key, value)    # set the attrribute.
 
-                if key in ["create_at", "updated_at"]:
+                if key in ["created_at", "updated_at"]:
                     # if key is one of the two
                     #  convert datetime to object format.
                     setattr(
                         self,
                         key, datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
-                    )
+                        )
         else:
             # if kwargs is empty, create the id and created_at as before.
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
-            self.updated_at = self.created_at
+            self.updated_at = datetime.now()
+            # from models package import storage variable
+            from models import storage
             storage.new(self)
-            print("Created new instance")
-
-    def __str__(self):
-        """Return a string representation of the BaseModel instance
-        """
-        return f"[{self.__class__.__name__}] ({self.id}) {self.__dict__}"
 
     def save(self):
         """update the updated_at attribute with the current datetime
         """
         self.updated_at = datetime.now()
+        # from models package import storage variable
+        from models import storage
         storage.save()
-        print('Saved newly updated instance')
 
     def to_dict(self):
         """Convert the object's attributes to a dictionary."""
@@ -64,3 +53,8 @@ class BaseModel:
         obj_dict['created_at'] = self.created_at.isoformat()
         obj_dict['updated_at'] = self.updated_at.isoformat()
         return obj_dict
+
+    def __str__(self):
+        """Return a string representation of the BaseModel instance
+        """
+        return f"[{self.__class__.__name__}] ({self.id}) {self.__dict__}"
