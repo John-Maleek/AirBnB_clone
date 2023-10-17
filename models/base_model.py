@@ -23,7 +23,7 @@ class BaseModel:
                     continue   # skip the __class__ key.
                 setattr(self, key, value)    # set the attrribute.
 
-                if key in ["create_at", "updated_at"]:
+                if key in ["created_at", "updated_at"]:
                     # if key is one of the two
                     #  convert datetime to object format.
                     setattr(

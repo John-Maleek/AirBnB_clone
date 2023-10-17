@@ -33,13 +33,13 @@ class FileStorage:
         serializes the __objects dictionary to JSON file specified
         in __file_path
         """
-        serialized_obj = FileStorage.all(self)
+        serialized_obj = {}
         for key, obj in self.__objects.items():
             try:
                 serialized_obj[key] = obj.to_dict()
             except AttributeError:
                 serialized_obj[key] = obj
-
+    
         with open(self.__file_path, 'w', encoding='utf-8') as fil:
             json.dump(serialized_obj, fil)
 
@@ -48,11 +48,12 @@ class FileStorage:
         Deserializes the JSON file back into the __objects dictionary.
         """
         try:
-            with open(self.__file_path, 'r') as fil:
+            with open(self.__file_path, 'r', encoding='utf-8') as fil:
                 json_data = json.load(fil)
                 if json_data:
                     data = json_data
                     for key, obj_dict in data.items():
                         self.__objects[key] = obj_dict
+                    print(type(self.__objects))
         except (FileNotFoundError, json.JSONDecodeError):
             pass

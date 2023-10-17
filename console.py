@@ -51,8 +51,8 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
         else:
             new_instance = classes[args]()
-            new_instance.save()
             print(new_instance.id)
+            new_instance.save()
 
     def do_show(self, args):
         """
@@ -70,7 +70,9 @@ class HBNBCommand(cmd.Cmd):
             else:
                 for key, val in storage.all().items():
                     if key.split('.')[1] == args[1]:
-                        print(val)
+                        if val['__class__'] in classes:
+                            obj = classes[val['__class__']](**val)
+                            print(obj)
                         return
                 print("** no instance found **")
 
@@ -88,11 +90,29 @@ class HBNBCommand(cmd.Cmd):
                 return
             for key, val in storage_list.items():
                 if key.split('.')[0] == args[0]:
-                    all_list.append(str(storage_list[key]))
+                    try:
+                        if val['__class__'] in classes:
+                            obj = classes[val['__class__']](**val)
+                            all_list.append(obj.__str__())
+                    except TypeError:
+                        val = val.to_dict()
+                        if val['__class__'] in classes:
+                            obj = classes[val['__class__']](**val)
+                            all_list.append(obj.__str__())
+
             print(all_list)
         else:
             for key, val in storage_list.items():
-                all_list.append(str(storage_list[key]))
+                try:
+                    if val['__class__'] in classes:
+                            obj = classes[val['__class__']](**val)
+                            all_list.append(obj.__str__())
+                except TypeError:
+                    val = val.to_dict()
+                    if val['__class__'] in classes:
+                        obj = classes[val['__class__']](**val)
+                        all_list.append(obj.__str__())
+
             print(all_list)
 
     def do_update(self, args):
@@ -121,9 +141,10 @@ class HBNBCommand(cmd.Cmd):
                             val['updated_at'] = datetime.now().strftime(
                                 "%Y-%m-%dT%H:%M:%S.%f")
                         except TypeError:
-                            setattr(storage.all()[key], args[2], args[3])
-                            setattr(storage.all()[key], 'updated_at', datetime.now().strftime(
-                                "%Y-%m-%dT%H:%M:%S.%f"))
+                            setattr(val, args[2], args[3])
+                            setattr(val, 'updated_at', datetime.now().strftime(
+                                    "%Y-%m-%dT%H:%M:%S.%f"))
+                        # storage.new(storage.all())
                         storage.save()
                         return
                 print("** no instance found **")
