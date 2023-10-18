@@ -5,7 +5,6 @@ deserialize JSON file to instanceis.
 """
 
 import json
-# from models import base_model
 
 
 class FileStorage:
@@ -49,7 +48,7 @@ class FileStorage:
         Deserializes the JSON file back into the __objects dictionary.
         """
         try:
-          with open(self.__file_path, 'r', encoding='utf-8') as fil:
+            with open(self.__file_path, 'r', encoding='utf-8') as fil:
                 json_data = json.load(fil)
                 if json_data:
                     data = json_data

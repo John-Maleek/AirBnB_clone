@@ -3,13 +3,6 @@
 My Base model.
 """
 import uuid
-
-# from models package import storage variable
-# from engine.file_storage import FileStorage
-from models.engine import file_storage
-
-storage = file_storage.FileStorage()
-# storage.reload()
 from datetime import datetime
 from models import storage
 
@@ -43,7 +36,6 @@ class BaseModel:
             self.created_at = datetime.now()
             self.updated_at = self.created_at
             storage.new(self)
-            print("Created new instance")
 
     def __str__(self):
         """Return a string representation of the BaseModel instance
@@ -55,7 +47,6 @@ class BaseModel:
         """
         self.updated_at = datetime.now()
         storage.save()
-        print('Saved newly updated instance')
 
     def to_dict(self):
         """Convert the object's attributes to a dictionary."""
