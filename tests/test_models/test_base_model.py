@@ -38,8 +38,8 @@ class TestBaseModel(unittest.TestCase):
         obj2 = BaseModel()
         t2 = datetime.now()
         self.assertTrue(t1 <= obj2.created_at <= t2)
-        self.assertNotEqual(obj1.created_at, obj1.updated_at)
-        self.assertNotEqual(obj2.created_at, obj2.updated_at)
+        self.assertEqual(obj1.created_at, obj1.updated_at)
+        self.assertEqual(obj2.created_at, obj2.updated_at)
         self.assertNotEqual(obj1.created_at, obj2.created_at)
         self.assertNotEqual(obj1.updated_at, obj2.updated_at)
 
